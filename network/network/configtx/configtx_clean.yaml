@@ -1,0 +1,210 @@
+Organizations:
+  - &OrdererOrg
+    Name: OrdererOrg
+    ID: OrdererMSP
+    MSPDir: ../organizations/ordererOrganizations/orderer.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrdererMSP.admin')"
+    OrdererEndpoints:
+      - orderer.orderer.com:7050
+
+  - &ParkingProvider1
+    Name: ParkingProvider1MSP
+    ID: ParkingProvider1MSP
+    MSPDir: ../organizations/peerOrganizations/parkingprovider1.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('ParkingProvider1MSP.admin', 'ParkingProvider1MSP.peer', 'ParkingProvider1MSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('ParkingProvider1MSP.admin', 'ParkingProvider1MSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('ParkingProvider1MSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('ParkingProvider1MSP.peer')"
+
+  - &ParkingProvider2
+    Name: ParkingProvider2MSP
+    ID: ParkingProvider2MSP
+    MSPDir: ../organizations/peerOrganizations/parkingprovider2.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('ParkingProvider2MSP.admin', 'ParkingProvider2MSP.peer', 'ParkingProvider2MSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('ParkingProvider2MSP.admin', 'ParkingProvider2MSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('ParkingProvider2MSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('ParkingProvider2MSP.peer')"
+
+  - &ParkingIntegrator
+    Name: ParkingIntegratorMSP
+    ID: ParkingIntegratorMSP
+    MSPDir: ../organizations/peerOrganizations/parkingintegrator.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('ParkingIntegratorMSP.admin', 'ParkingIntegratorMSP.peer', 'ParkingIntegratorMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('ParkingIntegratorMSP.admin', 'ParkingIntegratorMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('ParkingIntegratorMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('ParkingIntegratorMSP.peer')"
+
+Capabilities:
+  Channel: &ChannelCapabilities
+    V2_0: true
+
+  Orderer: &OrdererCapabilities
+    V2_0: true
+
+  Application: &ApplicationCapabilities
+    V2_5: true
+
+Application: &ApplicationDefaults
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+
+  Capabilities:
+    <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults # Orderer Type: The orderer implementation to start
+  OrdererType: etcdraft
+    - orderer.com:7050
+
+  EtcdRaft:
+    Consenters:
+      - Host: orderer.com
+        Port: 7050
+        ClientTLSCert: ../organizations/ordererOrganizations/orderer.com/orderers/orderer.orderer.com/tls/server.crt
+        ServerTLSCert: ../organizations/ordererOrganizations/orderer.com/orderers/orderer.orderer.com/tls/server.crt
+
+  # Batch Timeout: The amount of time to wait before creating a batch
+  BatchTimeout: 2s
+
+  # Batch Size: Controls the number of messages batched into a block
+  BatchSize:
+    # Max Message Count: The maximum number of messages to permit in a batch
+    MaxMessageCount: 10
+
+    # Absolute Max Bytes: The absolute maximum number of bytes allowed for
+    # the serialized messages in a batch.
+    AbsoluteMaxBytes: 99 MB
+
+    # Preferred Max Bytes: The preferred maximum number of bytes allowed for
+    # the serialized messages in a batch. A message larger than the preferred
+    # max bytes will result in a batch larger than preferred max bytes.
+    PreferredMaxBytes: 512 KB
+
+  # Organizations is the list of orgs which are defined as participants on
+  # the orderer side of the network
+  Organizations:
+
+  # Policies defines the set of policies at this level of the config tree
+  # For Orderer policies, their canonical path is
+  #   /Channel/Orderer/<PolicyName>
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    # BlockValidation specifies what signatures must be included in the block
+    # from the orderer for the peer to validate it.
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+
+################################################################################
+#
+#   CHANNEL
+#
+#   This section defines the values to encode into a config transaction or
+#   genesis block for channel related parameters.
+#
+################################################################################
+Channel: &ChannelDefaults
+  # Policies defines the set of policies at this level of the config tree
+  # For Channel policies, their canonical path is
+  #   /Channel/<PolicyName>
+  Policies:
+    # Who may invoke the 'Deliver' API
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    # Who may invoke the 'Broadcast' API
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    # By default, who may modify elements at this config level
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+
+  # Capabilities describes the channel level capabilities, see the
+  # dedicated Capabilities section elsewhere in this file for a full
+  # description
+  Capabilities:
+    <<: *ChannelCapabilities
+
+################################################################################
+#
+#   Profile
+#
+#   - Different configuration profiles may be encoded here to be specified
+#   as parameters to the configtxgen tool
+#
+################################################################################
+Profiles:
+  ParkingGenesis:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - *OrdererOrg
+      Capabilities: *OrdererCapabilities
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *ParkingProvider1
+        - *ParkingProvider2
+        - *ParkingIntegrator
+      Capabilities: *ApplicationCapabilities

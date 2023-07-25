@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  integrator-mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - ./init-db/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - test
+
+  integrator-backend:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../parkingintegrator.env
+    volumes:
+      - ../cryptos:/app/cryptos
+    networks:
+      - test
+    depends_on:
+      - integrator-mysql
+    command: "sh -c \"sleep 5 && ./app\""
+
+networks:
+  test:
+    name: fabric_test

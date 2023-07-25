@@ -1,0 +1,49 @@
+/channel-artifacts/*.tx
+/channel-artifacts/*.block
+/ledgers
+/ledgers-backup
+/channel-artifacts/*.json
+/org3-artifacts/crypto-config/*
+organizations/fabric-ca/ordererOrg/*
+organizations/fabric-ca/org1/*
+organizations/fabric-ca/org2/*
+organizations/ordererOrganizations/*
+organizations/peerOrganizations/*
+system-genesis-block/*
+*.tar.gz
+log.txt
+
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+
+network/uml
+network/network/organizations/ordererOrganizations
+network/network/organizations/peerOrganizations
+network/network/organizations/fabric-ca/orderer.com/*
+!network/network/organizations/fabric-ca/orderer.com/fabric-ca-server-config.yaml
+network/network/organizations/fabric-ca/parkingprovider1.com/*
+!network/network/organizations/fabric-ca/parkingprovider1.com/fabric-ca-server-config.yaml
+network/network/organizations/fabric-ca/parkingprovider2.com/*
+!network/network/organizations/fabric-ca/parkingprovider2.com/fabric-ca-server-config.yaml
+network/network/organizations/fabric-ca/parkingintegrator.com/*
+!network/network/organizations/fabric-ca/parkingintegrator.com/fabric-ca-server-config.yaml
+network/network/system-genesis-block

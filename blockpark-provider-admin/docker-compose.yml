@@ -1,0 +1,25 @@
+version: "3"
+services:
+  parking_provider_1:
+    build:
+      context: .
+      dockerfile: Dockerfile1
+    ports:
+      - "81:80"
+    restart: always
+    networks:
+      - test
+
+  parking_provider_2:
+    build:
+      context: .
+      dockerfile: Dockerfile2
+    ports:
+      - "82:80"
+    restart: always
+    networks:
+      - test
+
+networks:
+  test:
+    name: fabric_test
